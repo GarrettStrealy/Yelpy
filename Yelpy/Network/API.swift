@@ -11,11 +11,8 @@ import Foundation
 
 struct API {
     
-
-    
-    static func getRestaurants(completion: @escaping ([[String:Any]]?) -> Void) {
+    static func getRestaurants(completion: @escaping ([Restaurant]?) -> Void) {
         
-        // Add your own API key!
         let apikey = "0Kf0Hp2Ct9Pzp2QWvct4cnBXRE-IVgcPYoFWFbXHHYJf-BYkQLmfqPntJKABneYWLJDheYe8tM50y2ZpztumIk8HCrtYzokfM4D0m7p1z9riqIwaLkoE-8FUTBkwYHYx"
         
         // Coordinates for San Francisco
@@ -36,21 +33,24 @@ struct API {
             if let error = error {
                 print(error.localizedDescription)
             } else if let data = data {
-                
-        
 
-                // Get data from API and return it using completion
-                print(data)
+                // Get data from API and return it
                 
-                // Convert json response to a dictionary
+                // 1. Convert json response to a dictionary
                 let dataDictionary = try! JSONSerialization.jsonObject(with: data, options: []) as! [String: Any]
                 
-                // Grab the businesses' data and convert it to an array of
-                // dictionaries for each restaurant
-                let restaurants = dataDictionary["businesses"] as! [[String: Any]]
+                // 2. Get array of restaurant dictionaries
+                let restDictionaries = dataDictionary["businesses"] as! [[String: Any]]
                 
-                // completion is an escaping method which allows the data to be
-                // used outside of the closure
+                // 3. Variable to store array of restaurants
+                var restaurants: [Restaurant] = []
+                
+                // 4. Use each restaurant dictionary to initialize Restaurant object
+                for dictionary in restDictionaries {
+                    let restaurant = Restaurant.init(dict: dictionary)
+                    restaurants.append(restaurant) // add to restaurants array
+                }
+                
                 return completion(restaurants)
                 }
             }
